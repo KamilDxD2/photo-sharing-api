@@ -1,0 +1,17 @@
+{
+  "name": "photo-sharing-api",
+  "version": "1.0.0",
+  "description": "Instagram-style REST API in plain Node.js: users with JWT, photo upload, tags and image filters.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "cd server && node index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "formidable": "^1.2.2",
+    "jsonwebtoken": "^9.0.2",
+    "sharp": "^0.32.0"
+  }
+}

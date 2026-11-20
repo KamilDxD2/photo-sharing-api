@@ -1,0 +1,147 @@
+
+@baseUrl = http://localhost:3000
+@userName = TESTUSER1
+@email = test@example.com
+@password = Test1234
+
+
+### 1. Register a user
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+    "name": "{{userName}}",
+    "lastName": "Tester",
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+
+### 2. Confirm the account (1h token)
+GET {{baseUrl}}/api/user/confirm/TOKEN
+
+### 3. Log in
+# @name login
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+
+### 4. Check that the token is valid
+POST {{baseUrl}}/api/user/login
+Authorization: Bearer {{login.response.body.token}}
+
+
+### 5. Upload a photo to the user's album
+# @name upload
+POST {{baseUrl}}/api/photos
+Content-Type: multipart/form-data; boundary=----FormBoundary1234
+
+------FormBoundary1234
+Content-Disposition: form-data; name="file"; filename="input.jpg"
+Content-Type: image/jpeg
+
+< ./input.jpg
+------FormBoundary1234
+Content-Disposition: form-data; name="album"
+
+{{userName}}
+------FormBoundary1234--
+
+
+### 6. List all photos
+GET {{baseUrl}}/api/photos
+
+
+### 7. Get the uploaded photo
+GET {{baseUrl}}/api/photos/{{upload.response.body.id}}
+
+
+### 8. Mark the photo as changed
+PATCH {{baseUrl}}/api/photos/{{upload.response.body.id}}
+
+
+### 9. Image metadata
+GET {{baseUrl}}/api/filters/metadata/{{upload.response.body.id}}
+
+
+### 10. Apply a filter
+### rotate, resize, reformat, crop, grayscale, flip, flop, negate, tint
+PATCH {{baseUrl}}/api/filters
+Content-Type: application/json
+
+{
+    "id": {{upload.response.body.id}},
+    "name": "crop"
+}
+
+
+### 11. Download the original image
+GET {{baseUrl}}/api/getimage/{{upload.response.body.id}}
+
+
+### 12. Download the filtered image
+GET {{baseUrl}}/api/getimage/{{upload.response.body.id}}/filter/crop
+
+
+### 13. All tags as plain strings
+GET {{baseUrl}}/api/tags/raw
+
+
+### 14. All tags as objects
+GET {{baseUrl}}/api/tags
+
+
+### 15. One tag by id
+GET {{baseUrl}}/api/tags/3
+
+
+### 16. Create a tag
+POST {{baseUrl}}/api/tags
+Content-Type: application/json
+
+{
+    "name": "#krakow",
+    "popularity": "100"
+}
+
+
+### 17. Add tags to the photo
+PATCH {{baseUrl}}/api/photos/tags/{{upload.response.body.id}}
+Content-Type: application/json
+
+[
+    { "name": "#krakow" },
+    { "name": "#test" }
+]
+
+
+### 18. Tags of the photo
+GET {{baseUrl}}/api/photos/tags/{{upload.response.body.id}}
+
+
+### 19. Delete the photo
+DELETE {{baseUrl}}/api/photos/{{upload.response.body.id}}
+
+### 20. List users
+GET {{baseUrl}}/api/user
+
+
+### 21. Read my profile
+GET {{baseUrl}}/api/profile
+Authorization: Bearer {{login.response.body.token}}
+
+
+### 22. Update my profile
+PATCH {{baseUrl}}/api/profile
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+    "name": "UPDATED_NAME",
+    "lastname": "UPDATED_LASTNAME"
+}
